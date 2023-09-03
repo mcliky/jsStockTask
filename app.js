@@ -189,29 +189,32 @@ const arr = [
   },
 ];
 
-const notInStock = arr.filter((item) => {
-  if (item.inStock === false) {
-    return item;
-  }
-});
+const notInStore = arr.filter((item) => !item.inStock);
+console.log(notInStore);
+
+const isFreeDelivery = (totalDiscount) => {
+  return totalDiscount > 5000;
+};
 
 const sum = (acc, item) => {
-  if (notInStock.includes(item)) {
+  if (notInStore.includes(item)) {
     return acc;
   }
+
   const totlPrice = acc.totalPrice + item.price;
   const totalDiscount = totlPrice - totlPrice * (item.discount / 100);
   const weight = Number(item.weight.split(" ")[0]);
   const totlWeight = acc.totalWeight + weight;
+
   acc.totalPrice = totlPrice;
   acc.totalDiscount = totalDiscount;
-  if (totalDiscount > 5000) {
-    acc.isDeliveryFree = true;
-  }
+  acc.isDeliveryFree = isFreeDelivery(totalDiscount);
   acc.totalWeight = totlWeight;
 
   return acc;
 };
+
+
 
 const allPricesCart = {
   totalPrice: 0,
@@ -221,9 +224,10 @@ const allPricesCart = {
 };
 
 let totalPrice = arr.reduce(sum, allPricesCart);
-console.log(arr.length - notInStock.length);
 
-let midDiscount =
-  allPricesCart.totalDiscount / (arr.length - notInStock.length);
-console.log(Math.round(midDiscount));
+const midLength = (arr1, arr2) => {
+  const midDiscount = allPricesCart.totalDiscount / (arr1.length - arr2.length);
+  return midDiscount;
+};
+console.log(midLength(arr, notInStore));
 console.log(Math.round(allPricesCart.totalWeight));
