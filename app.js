@@ -196,38 +196,41 @@ const isFreeDelivery = (totalDiscount) => {
   return totalDiscount > 5000;
 };
 
-const sum = (acc, item) => {
-  if (notInStore.includes(item)) {
-    return acc;
-  }
+const allPricesCart = {
+  totalPrice: 0,
+  totalDiscount: 0,
+  isDeliveryFree: false,
+};
 
+const totalPrice = arr.reduce((acc, item) => {
   const totlPrice = acc.totalPrice + item.price;
   const totalDiscount = totlPrice - totlPrice * (item.discount / 100);
-  const weight = Number(item.weight.split(" ")[0]);
-  const totlWeight = acc.totalWeight + weight;
 
   acc.totalPrice = totlPrice;
   acc.totalDiscount = totalDiscount;
   acc.isDeliveryFree = isFreeDelivery(totalDiscount);
-  acc.totalWeight = totlWeight;
 
   return acc;
+}, allPricesCart);
+
+const totalWeight = arr.reduce(
+  (acc, item) => {
+    if (notInStore.includes(item)) {
+      return acc;
+    }
+
+    const weight = Number(item.weight.split(" ")[0]);
+    acc.totalWeight += weight;
+
+    return acc;
+  },
+  { totalWeight: 0 }
+);
+
+const avrgDiscount = (arr1, arr2) => {
+  let avgDiscount = allPricesCart.totalDiscount / (arr1.length - arr2.length);
+  return avgDiscount;
 };
 
-
-
-const allPricesCart = {
-  totalPrice: 0,
-  totalDiscount: 0,
-  totalWeight: 0,
-  isDeliveryFree: false,
-};
-
-let totalPrice = arr.reduce(sum, allPricesCart);
-
-const midLength = (arr1, arr2) => {
-  const midDiscount = allPricesCart.totalDiscount / (arr1.length - arr2.length);
-  return midDiscount;
-};
-console.log(midLength(arr, notInStore));
+console.log(avrgDiscount(arr, notInStore));
 console.log(Math.round(allPricesCart.totalWeight));
